@@ -1,0 +1,7 @@
+#Default is 5 blocks!
+radius: 5
+
+#Example
+#exceptionMaterial:
+# -STONE_HOE
+exceptionMaterial:

@@ -1,0 +1,4 @@
+com\taweerat\taweeratplugin\commands\SetRadiusCommand.class
+com\taweerat\taweeratplugin\TaweeratItemStacker.class
+com\taweerat\taweeratplugin\commands\events\StackItem.class
+com\taweerat\taweeratplugin\commands\ref\ValidMaterialToStack.class
