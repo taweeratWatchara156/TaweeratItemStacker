@@ -1,0 +1,4 @@
+name: TaweeratPlugin
+version: '1.0'
+main: com.taweerat.taweeratItemStacker.TaweeratItemStacker
+api-version: '1.21'
