@@ -10,9 +10,11 @@ import net.minecraft.world.entity.item.ItemEntity;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.craftbukkit.v1_21_R1.entity.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.*;
@@ -23,27 +25,26 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.joml.Vector3d;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ItemStacker implements Listener {
     private final TaweeratItemStacker instance = TaweeratItemStacker.getInstance();
     Map<String, Integer> stacker = instance.getStackerData();
     Map<String, Boolean> piglinState = instance.getPiglinState();
-    Vector3d radius = new Vector3d(3D, 2D, 3D);
     List<Material> exceptionMaterials = instance.getExceptionMaterials();
 
 //    item Spawn event
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     private void onItemSpawn(ItemSpawnEvent event) throws IOException {
         Item item = event.getEntity();
         initItemStack(item);
 
-        stackItem(item);
+        stackItem(item, false);
     }
 
 //    item despawn event
@@ -377,7 +378,7 @@ public class ItemStacker implements Listener {
 //    Get Entity Nearby
 
     private Item checkEntity(Item item){
-        List<Entity> entityNb = item.getNearbyEntities(radius.x, radius.y, radius.z);
+        List<Entity> entityNb = item.getNearbyEntities(instance.getRadius().x(), instance.getRadius().y(), instance.getRadius().z());
         for (Entity entity : entityNb){
             if(entity instanceof Item itemNb && itemNb.getItemStack().getType().equals(item.getItemStack().getType()) && isException(itemNb)){
                 return itemNb;
@@ -389,7 +390,7 @@ public class ItemStacker implements Listener {
 
 //    Stack item
 
-    private void stackItem(Item item) throws IOException {
+    public void stackItem(Item item, boolean effect) throws IOException {
         Item itemNb = checkEntity(item);
         if(itemNb != null){
             int amount = getAmount(item);
@@ -398,12 +399,15 @@ public class ItemStacker implements Listener {
             if(amount != -1 && nbAmount != -1){
                 updateStack(item, amount + nbAmount);
                 removeStack(itemNb);
+                if(effect){
+                    item.getWorld().spawnParticle(Particle.EXPLOSION, item.getLocation(), 1, 0, 0, 0, 0.1);
+                }
             }
         }
     }
 
     //    Get amount of item Stacker
-    private int getAmount(Item item){
+    public int getAmount(Item item){
         if(stacker.containsKey(item.getUniqueId().toString())){
             return stacker.get(item.getUniqueId().toString());
         }
@@ -412,7 +416,7 @@ public class ItemStacker implements Listener {
     }
 
 //    remove ItemStacker
-    private void removeStack(Item item) throws IOException {
+    public void removeStack(Item item) throws IOException {
         if(stacker.containsKey(item.getUniqueId().toString())){
             stacker.remove(item.getUniqueId().toString());
             instance.saveData(stacker);
@@ -456,7 +460,15 @@ public class ItemStacker implements Listener {
 
 //    item stacker name format
     private String stackerFormat(Item item, int amount){
-        return "" + ChatColor.GOLD + ChatColor.BOLD + "▶ " + ChatColor.LIGHT_PURPLE + ChatColor.BOLD + (amount + "x ") + ChatColor.RESET + item.getName();
+        String res;
+
+        if(item.getItemStack().hasItemMeta() && Objects.requireNonNull(item.getItemStack().getItemMeta()).hasDisplayName()){
+            res = "" + ChatColor.GOLD + ChatColor.BOLD + "▶ " + ChatColor.LIGHT_PURPLE + ChatColor.BOLD + (amount + "x ") + ChatColor.RESET + item.getItemStack().getItemMeta().getDisplayName();
+        }else{
+            res = "" + ChatColor.GOLD + ChatColor.BOLD + "▶ " + ChatColor.LIGHT_PURPLE + ChatColor.BOLD + (amount + "x ") + ChatColor.RESET + item.getName();
+        }
+
+        return res;
     }
 
 

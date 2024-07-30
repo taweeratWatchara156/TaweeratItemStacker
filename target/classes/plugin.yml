@@ -2,3 +2,7 @@ name: TaweeratPlugin
 version: '1.0'
 main: com.taweerat.taweeratItemStacker.TaweeratItemStacker
 api-version: '1.21'
+commands:
+  setRadius:
+    description: set stacker radius to specific value
+    usage: /<command> <x> <y> <z>
