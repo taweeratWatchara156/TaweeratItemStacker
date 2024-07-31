@@ -47,31 +47,6 @@ public final class TaweeratItemStacker extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new ItemStacker(), this);
 
-//        task = new BukkitRunnable() {
-//            @Override
-//            public void run() {
-//                for (World world : getServer().getWorlds()){
-//                    for (Entity entity : world.getEntities()){
-//                        if(entity.isOnGround()){
-//                            if(entity instanceof Item item){
-//                                ItemStacker stacker = new ItemStacker();
-//                                int amount = stacker.getAmount(item);
-//                                if(amount != -1){
-//                                    try {
-//                                        stacker.stackItem(item, true);
-//                                    } catch (IOException e) {
-//                                        throw new RuntimeException(e);
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        };
-//
-//        task.runTaskTimer(this, 200L, 200L);
-
 //        Commands
         Objects.requireNonNull(getCommand("setRadius")).setExecutor(new SetRadiusCommand(this));
     }

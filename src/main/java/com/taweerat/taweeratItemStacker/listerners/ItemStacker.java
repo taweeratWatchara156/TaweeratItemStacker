@@ -238,28 +238,6 @@ public class ItemStacker implements Listener {
         }
     }
 
-    @EventHandler
-    public void ItemSpawn(ItemSpawnEvent event){
-        Item item = event.getEntity();
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                int amount = getAmount(item);
-                if(amount != -1){
-                    try {
-                        boolean res = stackItem(item, true);
-
-                        if(res){
-                            this.cancel();
-                        }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        }.runTaskTimer(instance, 20L, 20L);
-    }
-
 //    Piglin barthering event
     @EventHandler
     public void piglinBartheringEvent(PiglinBarterEvent event) {
