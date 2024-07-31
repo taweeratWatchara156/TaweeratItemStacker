@@ -26,6 +26,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.awt.event.ItemEvent;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -237,6 +238,28 @@ public class ItemStacker implements Listener {
         }
     }
 
+    @EventHandler
+    public void ItemSpawn(ItemSpawnEvent event){
+        Item item = event.getEntity();
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                int amount = getAmount(item);
+                if(amount != -1){
+                    try {
+                        boolean res = stackItem(item, true);
+
+                        if(res){
+                            this.cancel();
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }.runTaskTimer(instance, 20L, 20L);
+    }
+
 //    Piglin barthering event
     @EventHandler
     public void piglinBartheringEvent(PiglinBarterEvent event) {
@@ -390,7 +413,7 @@ public class ItemStacker implements Listener {
 
 //    Stack item
 
-    public void stackItem(Item item, boolean effect) throws IOException {
+    public boolean stackItem(Item item, boolean effect) throws IOException {
         Item itemNb = checkEntity(item);
         if(itemNb != null){
             int amount = getAmount(item);
@@ -402,8 +425,12 @@ public class ItemStacker implements Listener {
                 if(effect){
                     item.getWorld().spawnParticle(Particle.EXPLOSION, item.getLocation(), 1, 0, 0, 0, 0.1);
                 }
+
+                return true;
             }
         }
+
+        return false;
     }
 
     //    Get amount of item Stacker
